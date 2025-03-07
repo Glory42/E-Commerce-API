@@ -1,8 +1,18 @@
 const pool = require('../config/db');
 
 const getAllProducts = async (req, res) => {
+    const { category  } = req.query;
+
     try {
-        const { rows } = await pool.query('SELECT * FROM products');
+        let query = 'SELECT p.*, c.name AS category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id';
+        const values = [];
+
+        if (category) {
+            query += ' WHERE p.category_id = $1';
+            values.push(category);
+        };
+
+        const { rows } = await pool.query(query, values);
         res.json(rows);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch products' });
