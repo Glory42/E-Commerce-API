@@ -17,11 +17,13 @@ ecommerce-api/
 │   ├── auth.js       # User registration/login
 │   ├── products.js   # Product CRUD
 │   ├── cart.js       # Cart management
+│   ├── category.js   # Category CRUD
 │   └── orders.js     # Order processing
 ├── controllers/
 │   ├── authController.js
 │   ├── productController.js
 │   ├── cartController.js
+│   ├── categoryController.js
 │   └── orderController.js
 └── middleware/
     ├── auth.js       # JWT authentication
