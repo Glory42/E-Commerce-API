@@ -6,10 +6,11 @@ import {
     updateUserById,
     updateUserProfile,
     deleteUser,
+} from '../controllers/userController.js';
+import {
     register,
     login,
-
-} from '../controllers/userController.js';
+} from '../controllers/authController.js';
 
 //To do: add Protection on user priviliage routes, and add protecion to admin only route.
 
