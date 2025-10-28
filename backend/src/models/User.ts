@@ -1,0 +1,200 @@
+import supabase from '../config/database.js';
+import bcrypt from 'bcrypt';
+import UserCredentials from '../types/User.js'
+import UserUpdates from '../types/Update.js';
+
+const validateUser = ({ email, password, username, phone}: Omit<UserCredentials, 'role'>) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        throw new Error("Invalid email format");
+    }
+    if (password.length < 8) {
+        throw new Error('Password must be longer than 7 characters');
+    }
+    if (!username || username.length < 3) {
+        throw new Error('User name must be greater than 3 characters');
+    }
+    return true;
+}
+
+
+export default class User {
+    static async getUserById(id: number) {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', id)
+                .single();
+            if (error) throw error;
+            return data;
+
+        } catch (err) {
+            if(err instanceof Error) {
+                console.error(JSON.stringify({
+                    action: 'Error fetching User by ID',
+                    message: err.message,
+                    stack: err.stack,
+                    timestamp: new Date().toISOString()
+                }));
+                throw new Error('Failed to fetch user');
+            }
+        }
+    }
+
+    static async getUserByEmail(email: string) {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', email)
+                .single();
+            if (error) throw error;
+            return data;
+             
+        } catch (err) {
+            if (err instanceof Error) {
+                console.error(JSON.stringify({
+                    action: 'Error fetching User by Email',
+                    message: err.message,
+                    stack: err.stack,
+                    timestamp: new Date().toISOString()
+                }));
+                throw new Error('Failed to fetch user');
+            }
+        }
+    }
+    
+    static async getUserByPhone(phone: number) {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('phone', phone)
+                .single();
+            if (error) throw error;
+            return data;
+
+        } catch (err) {
+            if (err instanceof Error) {
+                console.error(JSON.stringify({
+                    action: 'Error fetching User by Phone',
+                    message: err.message,
+                    stack: err.stack,
+                    timestamp: new Date().toISOString()
+                }));
+                throw new Error('Failed to fetch user');
+            }
+        }
+    }
+
+    static async createUser({email, password, username, phone, role='user'}: UserCredentials) {
+        try {
+            validateUser({email, password, username, phone});
+            const harsedPassword = await bcrypt.hash(password, 10);
+            const { data, error } = supabase
+                .from ('users')
+                .insert({
+                    email,
+                    password: harsedPassword,
+                    username,
+                    phone,
+                    role,
+                    created_at: new Date().toISOString(),
+                    email_updated_at: new Date().toISOString(),
+                    password_updated_at: new Date().toISOString(),
+                    username_updated_at: new Date().toISOString(),
+                    phone_updated_at: new Date().toISOString(),
+                })
+                .select();
+
+                if(error) {
+                    console.log('supabase insert error:', error.message, error.stack, error.code);
+                    throw error;
+                }
+                
+                if(!data || data.length === 0) {
+                    console.error('No data returned after insert, attemting manual fetch:', { data });
+                    const { data: manualData, error: manualError } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('email', email)
+                        .single();
+                    if (manualError) {
+                        console.error('Manual fetch error: ', manualError.message, manualError.stack);
+                        throw manualError;
+                    }
+                    return manualData;
+                }
+                return data[0];
+
+        } catch (err) {
+            if (err instanceof Error) {
+                console.error(JSON.stringify({
+                    action: 'Error while creating user',
+                    message: err.message,
+                    stack: err.stack,
+                    timestamp: new Date().toISOString()
+                }));
+            }
+        }
+    }
+
+    static async updateUser(id: number, updates: UserUpdates) {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .update({
+                    ...updates,
+                    email_updated_at: new Date().toISOString(),
+                    password_updated_at: new Date().toISOString(),
+                    username_updated_at: new Date().toISOString(),
+                    phone_updated_at: new Date().toISOString(),
+                })
+                .eq('id', id)
+                .select();
+            
+            if(error) {
+                console.log('supabase update error:', error.message, error.stack, error.code);
+                throw error;
+            }
+            return data[0];
+            
+        } catch (err) {
+            if (err instanceof Error) {
+                console.error(JSON.stringify({
+                    action: 'Error while updating user',
+                    message: err.message,
+                    stack: err.stack,
+                    timestamp: new Date().toISOString()
+                }));
+            }
+        }
+    }
+
+    static async deleteUser(id: number) {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .delete()
+                .eq('id', id)
+            
+            
+            if(error) {
+                console.log('supabase delete error:', error.message, error.stack, error.code);
+                throw error;
+            }
+            return data;
+
+        } catch (err) {
+            if (err instanceof Error) {
+                console.error(JSON.stringify({
+                    action: 'Error while deleting user',
+                    message: err.message,
+                    stack: err.stack,
+                    timestamp: new Date().toISOString()
+                }));
+            }
+        }
+    }
+}
