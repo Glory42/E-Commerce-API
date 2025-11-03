@@ -1,11 +1,11 @@
 import Router from 'express';
 import {
-  addOrderItems,
-  getMyOrders,
-  getOrderById,
-  getOrders,
-  updateOrderToDelivered,
-  updateOrderToPaid,
+    addOrderItems,
+    getMyOrders,
+    getOrderById,
+    getOrders,
+    updateOrderToDelivered,
+    updateOrderToPaid,
 } from '../controllers/orderController.js';
 //To do: add Protection on user priviliage routes, and add protecion to admin only route.
 
