@@ -7,19 +7,19 @@ import {
     updateOrderToDelivered,
     updateOrderToPaid,
 } from '../controllers/orderController.js';
-//To do: add Protection on user priviliage routes, and add protecion to admin only route.
+import adminPrivilege from '../middlewares/adminPrivilege.js';
+import userProtection from '../middlewares/userProtection.js';
+import authToken from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
-//user protection
-router.post('/', addOrderItems);
-router.get('/:id', getOrderById);
-router.get('/myOrders', getMyOrders);
-router.put('/:id/pay', updateOrderToPaid);
+router.post('/', authToken, addOrderItems);
+router.get('/', authToken, adminPrivilege, getOrders);
+router.get('/myOrders', authToken, getMyOrders);
 
-//admin + user
-router.get('/', getOrders);
-router.put('/:id/deliver', updateOrderToDelivered);
-router.put('/:id/pay', updateOrderToPaid);
+router.get('/:id', authToken, getOrderById);
+
+router.put('/:id/deliver', authToken, adminPrivilege, updateOrderToDelivered);
+router.put('/:id/pay', authToken, adminPrivilege, updateOrderToPaid);
 
 export default router; 

@@ -11,22 +11,20 @@ import {
     register,
     login,
 } from '../controllers/authController.js';
-
-//To do: add Protection on user priviliage routes.
 import adminPrivilege from '../middlewares/adminPrivilege.js';
+import userProtection from '../middlewares/userProtection.js';
+import authToken from '../middlewares/authMiddleware.js';
+
 const router = Router();
 
-//admin only
-router.get('/', adminPrivilege, getUsers);
-router.get('/:id', adminPrivilege, getUserById);
-router.put('/:id', adminPrivilege, updateUserById);
-router.delete('/:id', adminPrivilege, deleteUser);
-
-//user 
+router.get('/', authToken, adminPrivilege, getUsers);
 router.post('/register', register);
 router.post('/login', login);
-// user protecion must.
-router.put('/profile', updateUserProfile);
-router.get('/profile', getUserProfile);3
+router.put('/profile', authToken, userProtection, updateUserProfile);
+router.get('/profile', authToken, getUserProfile);
+
+router.get('/:id', authToken, adminPrivilege, getUserById);
+router.put('/:id', authToken, adminPrivilege, updateUserById);
+router.delete('/:id', authToken, adminPrivilege, deleteUser);
 
 export default router;
