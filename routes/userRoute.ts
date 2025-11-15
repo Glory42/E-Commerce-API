@@ -12,15 +12,15 @@ import {
     login,
 } from '../controllers/authController.js';
 
-//To do: add Protection on user priviliage routes, and add protecion to admin only route.
-
+//To do: add Protection on user priviliage routes.
+import adminPrivilege from '../middlewares/adminPrivilege.js';
 const router = Router();
 
 //admin only
-router.get('/', getUsers);
-router.get('/:id', getUserById);
-router.put('/:id', updateUserById);
-router.delete('/:id', deleteUser);
+router.get('/', adminPrivilege, getUsers);
+router.get('/:id', adminPrivilege, getUserById);
+router.put('/:id', adminPrivilege, updateUserById);
+router.delete('/:id', adminPrivilege, deleteUser);
 
 //user 
 router.post('/register', register);

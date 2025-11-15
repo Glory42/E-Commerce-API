@@ -7,7 +7,8 @@ import {
     updateProduct,
     deleteProduct
 } from '../controllers/productController.js';
-//To do: add Protection on user priviliage routes, and add protecion to admin only route.
+//To do: add Protection on user priviliage routes.
+import adminPrivilege from '../middlewares/adminPrivilege.js';
 
 const router = Router();
 
@@ -17,8 +18,8 @@ router.get('/:id', getProductById);
 // user protecion
 router.get('/:id/reviews', createProductReview);
 // admin only 
-router.post('/',createProduct);
-router.put('/:id', updateProduct);
-router.delete('/:id', deleteProduct);
+router.post('/', adminPrivilege, createProduct);
+router.put('/:id', adminPrivilege, updateProduct);
+router.delete('/:id', adminPrivilege, deleteProduct);
 
 export default router;
