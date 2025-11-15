@@ -15,7 +15,7 @@ const config: Config = {
     nodeEnv: String(process.env.NODE_ENV),
     JWT_TOKEN: String(process.env.JWT_TOKEN),
     supabase_key: String(process.env.SUPABASE_KEY),
-    supabase_url: String(process.env.SUPABASE_URl),
+    supabase_url: String(process.env.SUPABASE_URL),
 }
 
 export default config;
