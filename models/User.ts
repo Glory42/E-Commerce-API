@@ -40,7 +40,7 @@ export default class User {
         }
     }
 
-    static async getUserById(id: number) {
+    static async getUserById(id: string) {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -109,7 +109,7 @@ export default class User {
         }
     }
 
-    static async getUserProfile(id: Number) {
+    static async getUserProfile(id: string) {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -134,12 +134,12 @@ export default class User {
     static async createUser({email, password, username, phone, role='user'}: UserCredentials) {
         try {
             validateUser({email, password, username, phone});
-            const harsedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = await bcrypt.hash(password, 10);
             const { data, error } = supabase
                 .from ('users')
                 .insert({
                     email,
-                    password: harsedPassword,
+                    password: hashedPassword,
                     username,
                     phone,
                     role,
@@ -183,7 +183,7 @@ export default class User {
         }
     }
 
-    static async updateUser(id: number, updates: UserUpdates) {
+    static async updateUser(id: string, updates: UserUpdates) {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -215,7 +215,7 @@ export default class User {
         }
     }
 
-    static async deleteUser(id: number) {
+    static async deleteUser(id: string) {
         try {
             const { data, error } = await supabase
                 .from('users')
