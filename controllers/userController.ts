@@ -49,12 +49,12 @@ export async function getUserById(req: Request, res: Response) {
 
 export async function getUserProfile(req: Request, res: Response) {
     try {
-        const { id } = req.params;
-        if (!id) {
-            return res.status(400).json({ message: 'User id is required' });
+        const userId = req.user?.id;
+         if (!userId) {
+            return res.status(401).json({ error: 'Unauthorized - User ID not found' });
         }
 
-        const userProfile = await User.getUserProfile(id);
+        const userProfile = await User.getUserProfile(userId);
         if (!userProfile) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -140,7 +140,7 @@ export async function deleteUser(req: Request, res: Response) {
         }
 
         const deletedUser = await User.deleteUser(id);
-        if (!deletedUser || deletedUser.length === 0) {
+        if (!deletedUser) {
             return res.status(404).json({ message: 'Failed to delete user' });
         }
 
