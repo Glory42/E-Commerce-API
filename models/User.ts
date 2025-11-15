@@ -1,6 +1,6 @@
 import supabase from '../config/database.js';
 import bcrypt from 'bcrypt';
-import UserCredentials from '../types/User.js'
+import UserCredentials from '../types/User.js';
 import UserUpdates from '../types/Update.js';
 
 const validateUser = ({ email, password, username, phone}: Omit<UserCredentials, 'role'>) => {
@@ -17,13 +17,12 @@ const validateUser = ({ email, password, username, phone}: Omit<UserCredentials,
     return true;
 }
 
-
 export default class User {
     static async getUser(){
         try {
             const { data, error } = await supabase
                 .from('users')
-                .select('*')
+                .select('*');
             if (error) throw error;
             return data;
 
@@ -113,9 +112,9 @@ export default class User {
         try {
             const { data, error } = await supabase
                 .from('users')
-                .select('id', 'username', 'created_at')
+                .select('id, username, created_at')
                 .eq('id', id)
-                .single()
+                .single();
             if (error) throw error;
             return data;
         } catch (err) {
@@ -134,12 +133,13 @@ export default class User {
     static async createUser({email, password, username, phone, role='user'}: UserCredentials) {
         try {
             validateUser({email, password, username, phone});
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const { data, error } = supabase
-                .from ('users')
+            const harsedPassword = await bcrypt.hash(password, 10);
+            
+            const { data, error } = await supabase
+                .from('users')
                 .insert({
                     email,
-                    password: hashedPassword,
+                    password: harsedPassword,
                     username,
                     phone,
                     role,
@@ -149,27 +149,24 @@ export default class User {
                     username_updated_at: new Date().toISOString(),
                     phone_updated_at: new Date().toISOString(),
                 })
-                .select();
-
-                if(error) {
-                    console.log('supabase insert error:', error.message, error.stack, error.code);
-                    throw error;
+                .select()
+                    
+            if(error) {
+                throw error;
+            }
+            
+            if(!data || data.length === 0) {
+                const { data: manualData, error: manualError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+                if (manualError) {
+                    throw manualError;
                 }
-                
-                if(!data || data.length === 0) {
-                    console.error('No data returned after insert, attemting manual fetch:', { data });
-                    const { data: manualData, error: manualError } = await supabase
-                        .from('users')
-                        .select('*')
-                        .eq('email', email)
-                        .single();
-                    if (manualError) {
-                        console.error('Manual fetch error: ', manualError.message, manualError.stack);
-                        throw manualError;
-                    }
-                    return manualData;
-                }
-                return data[0];
+                return manualData;
+            }
+            return data[0];
 
         } catch (err) {
             if (err instanceof Error) {
@@ -179,6 +176,7 @@ export default class User {
                     stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
+                throw err;
             }
         }
     }
@@ -198,7 +196,6 @@ export default class User {
                 .select();
             
             if(error) {
-                console.log('supabase update error:', error.message, error.stack, error.code);
                 throw error;
             }
             return data[0];
@@ -211,6 +208,7 @@ export default class User {
                     stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
+                throw err;
             }
         }
     }
@@ -220,11 +218,9 @@ export default class User {
             const { data, error } = await supabase
                 .from('users')
                 .delete()
-                .eq('id', id)
-            
+                .eq('id', id);
             
             if(error) {
-                console.log('supabase delete error:', error.message, error.stack, error.code);
                 throw error;
             }
             return data;
@@ -237,6 +233,7 @@ export default class User {
                     stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
+                throw err;
             }
         }
     }
