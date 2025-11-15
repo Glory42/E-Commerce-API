@@ -19,6 +19,27 @@ const validateUser = ({ email, password, username, phone}: Omit<UserCredentials,
 
 
 export default class User {
+    static async getUser(){
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+            if (error) throw error;
+            return data;
+
+        } catch (err) {
+            if(err instanceof Error) {
+                console.error(JSON.stringify({
+                    action: 'Error fetching Users',
+                    message: err.message,
+                    stack: err.stack,
+                    timestamp: new Date().toISOString()
+                }));
+                throw new Error('Failed to fetch users');
+            }
+        }
+    }
+
     static async getUserById(id: number) {
         try {
             const { data, error } = await supabase
@@ -84,6 +105,28 @@ export default class User {
                     timestamp: new Date().toISOString()
                 }));
                 throw new Error('Failed to fetch user');
+            }
+        }
+    }
+
+    static async getUserProfile(id: Number) {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('id', 'username', 'created_at')
+                .eq('id', id)
+                .single()
+            if (error) throw error;
+            return data;
+        } catch (err) {
+            if (err instanceof Error) {
+                console.error(JSON.stringify({
+                    action: 'Error fetching User Profile',
+                    message: err.message,
+                    stack: err.stack,
+                    timestamp: new Date().toISOString()
+                }));
+                throw new Error('Failed to fetch user profile');
             }
         }
     }
