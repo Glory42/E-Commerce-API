@@ -62,6 +62,30 @@ export default class User {
         }
     }
 
+    static async getUserByUsername(username: string) {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('username', username)
+                .single()
+            if (error) throw error;
+
+            return data;
+
+        } catch (err) {
+            if (err instanceof Error) {
+                console.log(JSON.stringify({
+                    action: 'Error fetching user by username',
+                    message: err.message,
+                    static: err.stack,
+                    timestamp: new Date().toISOString()
+                }));
+                throw new Error('Failed to fetch user');
+            }
+        }
+    }
+
     static async getUserByEmail(email: string) {
         try {
             const { data, error } = await supabase
