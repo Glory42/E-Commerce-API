@@ -1,1 +1,0 @@
-rewriting everything from js to ts by not adding type, rewriting everything on typescript from start because i dont like the old code.
