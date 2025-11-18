@@ -1,9 +1,14 @@
 import supabase from '../config/database.js';
 import bcrypt from 'bcrypt';
-import UserCredentials from '../types/User.js';
-import UserUpdates from '../types/Update.js';
+import { 
+    UserDTO, 
+    UpdateUserDTO, 
+    ValidateUserDTO, 
+    CreateUserDTO, 
+    ProfileDTO 
+} from '../types/User.js';
 
-const validateUser = ({ email, password, username, phone}: Omit<UserCredentials, 'role'>) => {
+const validateUser = ({ email, password, username, phone}: ValidateUserDTO) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         throw new Error("Invalid email format");
@@ -18,12 +23,13 @@ const validateUser = ({ email, password, username, phone}: Omit<UserCredentials,
 }
 
 export default class User {
-    static async getUser(){
+    static async getUser(): Promise<UserDTO[]>{
         try {
             const { data, error } = await supabase
                 .from('users')
                 .select('*');
             if (error) throw error;
+
             return data;
 
         } catch (err) {
@@ -34,19 +40,20 @@ export default class User {
                     stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw new Error('Failed to fetch users');
             }
+            throw new Error('Failed to fetch users');
         }
     }
 
-    static async getUserById(id: string) {
+    static async getUserById(id: string): Promise<UserDTO | null> {
         try {
             const { data, error } = await supabase
-                .from('users')
+                .from('users') 
                 .select('*')
                 .eq('id', id)
                 .single();
             if (error) throw error;
+
             return data;
 
         } catch (err) {
@@ -57,12 +64,12 @@ export default class User {
                     stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw new Error('Failed to fetch user');
             }
+            throw new Error('Failed to fetch users');
         }
     }
 
-    static async getUserByUsername(username: string) {
+    static async getUserByUsername(username: string): Promise<UserDTO | null> {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -81,12 +88,12 @@ export default class User {
                     static: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw new Error('Failed to fetch user');
             }
+            throw new Error('Failed to fetch users');
         }
     }
 
-    static async getUserByEmail(email: string) {
+    static async getUserByEmail(email: string): Promise<UserDTO | null> {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -94,6 +101,7 @@ export default class User {
                 .eq('email', email)
                 .single();
             if (error) throw error;
+
             return data;
              
         } catch (err) {
@@ -104,12 +112,12 @@ export default class User {
                     stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw new Error('Failed to fetch user');
             }
+            throw new Error('Failed to fetch users');
         }
     }
     
-    static async getUserByPhone(phone: number) {
+    static async getUserByPhone(phone: number): Promise<UserDTO | null> {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -117,6 +125,7 @@ export default class User {
                 .eq('phone', phone)
                 .single();
             if (error) throw error;
+
             return data;
 
         } catch (err) {
@@ -127,12 +136,12 @@ export default class User {
                     stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw new Error('Failed to fetch user');
             }
+            throw new Error('Failed to fetch users');
         }
     }
 
-    static async getUserProfile(id: string) {
+    static async getUserProfile(id: string): Promise<ProfileDTO> {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -140,7 +149,9 @@ export default class User {
                 .eq('id', id)
                 .single();
             if (error) throw error;
+
             return data;
+
         } catch (err) {
             if (err instanceof Error) {
                 console.error(JSON.stringify({
@@ -149,12 +160,12 @@ export default class User {
                     stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw new Error('Failed to fetch user profile');
             }
+            throw new Error('Failed to fetch user profile');
         }
     }
 
-    static async createUser({email, password, username, phone, role='user'}: UserCredentials) {
+    static async createUser({email, password, username, phone, role='user'}: CreateUserDTO): Promise<CreateUserDTO> {
         try {
             validateUser({email, password, username, phone});
             const harsedPassword = await bcrypt.hash(password, 10);
@@ -190,6 +201,7 @@ export default class User {
                 }
                 return manualData;
             }
+
             return data[0];
 
         } catch (err) {
@@ -200,12 +212,12 @@ export default class User {
                     stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw err;
             }
+            throw err;
         }
     }
 
-    static async updateUser(id: string, updates: UserUpdates) {
+    static async updateUser(id: string, updates: UpdateUserDTO): Promise<UpdateUserDTO> {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -222,6 +234,7 @@ export default class User {
             if(error) {
                 throw error;
             }
+
             return data[0];
             
         } catch (err) {
@@ -232,12 +245,12 @@ export default class User {
                     stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw err;
             }
+            throw err;
         }
     }
 
-    static async deleteUser(id: string) {
+    static async deleteUser(id: string): Promise<UserDTO | null>  {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -247,6 +260,7 @@ export default class User {
             if(error) {
                 throw error;
             }
+            
             return data;
 
         } catch (err) {
@@ -257,8 +271,8 @@ export default class User {
                     stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw err;
             }
+            throw err;
         }
     }
 }
