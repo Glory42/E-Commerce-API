@@ -1,9 +1,13 @@
 import supabase from '../config/database.js';
-import Products from '../types/Product.js';
-import Updateproducts from '../types/Pupadate.js'
+import { 
+    ProductDTO, 
+    UpdateProductDTO, 
+    CreateProductDTO, 
+    ReviewDTO 
+} from '../types/Product.js';
 
 export default class Product {
-    static async getProducts() {
+    static async getProducts(): Promise<ProductDTO[]> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -19,13 +23,13 @@ export default class Product {
                     message: err.message,
                     static: err.stack,
                     timestamp: new Date().toISOString()
-                }));
-                throw new Error('Failed to fetch products');
+                }));   
             }
+            throw new Error('Failed to fetch products');
         }
     }
 
-    static async getProductById(id: string) {
+    static async getProductById(id: string): Promise<ProductDTO[] | null> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -44,12 +48,12 @@ export default class Product {
                     static: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw new Error('Failed to fetch product');
             } 
+            throw new Error('Failed to fetch product');
         }
     }
 
-    static async getProductByName(name: string) {
+    static async getProductByName(name: string): Promise<ProductDTO[] | null> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -68,12 +72,12 @@ export default class Product {
                     static: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw new Error('Failed to fetch product');
             }
+            throw new Error('Failed to fetch product');
         }
     }
 
-    static async getProductByPrice(price: number) {
+    static async getProductByPrice(price: number): Promise<ProductDTO[] | null> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -92,12 +96,12 @@ export default class Product {
                     static: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw new Error('Failed to fetch product');
             }
+            throw new Error('Failed to fetch product');
         }
     }
 
-    static async getProductByStock(stock: string | boolean) {
+    static async getProductByStock(stock: string | boolean): Promise<ProductDTO[] | null> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -116,12 +120,12 @@ export default class Product {
                     static: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw new Error('Failed to fetch product');
             }
+            throw new Error('Failed to fetch product');
         }
     }
 
-    static async getProductByCategory(category: string) {
+    static async getProductByCategory(category: string): Promise<ProductDTO[] | null> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -140,12 +144,12 @@ export default class Product {
                     static: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw new Error('Failed to fetch product');
             }
+            throw new Error('Failed to fetch product');
         }
     }
 
-    static async createProduct({ name, price, stock, category }: Products) {
+    static async createProduct({ name, price, stock, category }: CreateProductDTO): Promise<CreateProductDTO> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -185,12 +189,12 @@ export default class Product {
                     static: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw err;
             }
+            throw err;
         }
     } 
 
-    static async createProductReview(id: string, review: string) {
+    static async createProductReview(id: string, review: string): Promise<ReviewDTO> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -210,12 +214,12 @@ export default class Product {
                     static: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw err;
             }
+            throw err;
         }
     } 
-    // change the type or die -------------->  this has to go
-    static async updateProduct(id: string, updates: Updateproducts) {
+
+    static async updateProduct(id: string, updates: UpdateProductDTO): Promise<UpdateProductDTO> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -227,6 +231,7 @@ export default class Product {
                 })
                 .eq('id', id)
                 .select()
+                .single()
             if (error) throw error;
 
             return data;
@@ -239,12 +244,12 @@ export default class Product {
                     static: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw err;
             }
+            throw err;
         }
     }
 
-    static async deleteProduct(id: string) {
+    static async deleteProduct(id: string): Promise<ProductDTO | null> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -263,8 +268,8 @@ export default class Product {
                     static: err.stack,
                     timestamp: new Date().toISOString()
                 }));
-                throw err;
             }
+            throw err;
         }
     }
 }
