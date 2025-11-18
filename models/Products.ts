@@ -1,8 +1,9 @@
 import supabase from '../config/database.js';
 import Products from '../types/Product.js';
+import Updateproducts from '../types/Pupadate.js'
 
 export default class Product {
-    static async getProduct() {
+    static async getProducts() {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -130,7 +131,7 @@ export default class Product {
             if (error) throw error;
 
             return data;
-            
+
         } catch (err) {
             if (err instanceof Error) {
                 console.log(JSON.stringify({
@@ -144,8 +145,37 @@ export default class Product {
         }
     }
 
-    static async createProduct() {
+    static async createProduct({ name, price, stock, category }: Products) {
         try {
+            const { data, error } = await supabase
+                .from('products')
+                .insert({
+                    name,
+                    price,
+                    stock,
+                    category,
+                    created_at: new Date().toISOString,
+                    name_updated_at: new Date().toISOString,
+                    price_updated_at: new Date().toISOString,
+                    category_updated_at: new Date().toISOString
+                })
+                .select()
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                const { data:manualData, error:manualError } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('name', name)
+                    .single()
+                if (manualError) {
+                    throw manualError;
+                }
+
+                return manualData;
+            }
+            
+            return data[0];
 
         } catch (err) {
             if (err instanceof Error) {
@@ -160,8 +190,17 @@ export default class Product {
         }
     } 
 
-    static async createProductReview() {
+    static async createProductReview(id: string, review: string) {
         try {
+            const { data, error } = await supabase
+                .from('products')
+                .update(review)
+                .eq('id', id)
+                .select()
+                .single()
+            if (error) throw error;
+
+            return data;
 
         } catch (err) {
             if (err instanceof Error) {
@@ -175,9 +214,22 @@ export default class Product {
             }
         }
     } 
-
-    static async updateProduct() {
+    // change the type or die -------------->  this has to go
+    static async updateProduct(id: string, updates: Updateproducts) {
         try {
+            const { data, error } = await supabase
+                .from('products')
+                .update({
+                    ...updates,
+                    name_updated_at: new Date().toISOString,
+                    price_updated_at: new Date().toISOString,
+                    category_updated_at: new Date().toISOString
+                })
+                .eq('id', id)
+                .select()
+            if (error) throw error;
+
+            return data;
 
         } catch (err) {
             if (err instanceof Error) {
@@ -192,8 +244,16 @@ export default class Product {
         }
     }
 
-    static async deleteProduct() {
+    static async deleteProduct(id: string) {
         try {
+            const { data, error } = await supabase
+                .from('products')
+                .delete()
+                .eq('id', id)
+                
+            if (error) throw error;
+
+            return data;
 
         } catch (err) {
             if (err instanceof Error) {
