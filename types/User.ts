@@ -1,9 +1,35 @@
-interface UserCredentials {
+export interface UserDTO {
+    id: string,
     email: string,
     password: string,
     username: string,
     phone: number,
-    role: string,
+    role: 'user' | 'admin',
+}
+export interface ValidateUserDTO {
+    email: string,
+    password: string,
+    username: string,
+    phone: number,
 }
 
-export default UserCredentials;
+export interface CreateUserDTO {
+    id?: string,
+    email: string,
+    password: string,
+    username: string,
+    phone: number,
+    role: 'user' | 'admin',
+}
+
+export interface UpdateUserDTO {
+    email: string,
+    password: string,
+    phone: number,
+    username: string
+}
+
+export interface ProfileDTO {
+    username: string
+    created_at: string
+}
