@@ -5,11 +5,11 @@ export async function getUsers(req: Request, res: Response) {
     try {
         const users = await User.getUser();
         if (!users) {
-            res.status(404).json({ message: 'Users not found' });
+            res.status(404).json({ message: 'No user found' });
         }
 
         res.status(200).json({
-            message: 'Users get',
+            message: 'Users fetched successfully',
             users,
         });
 
@@ -34,7 +34,7 @@ export async function getUserById(req: Request, res: Response) {
         }
         
         res.status(200).json({
-            message: 'User get by id',
+            message: 'User fetched successfully',
             user,
         });
 
@@ -56,11 +56,11 @@ export async function getUserProfile(req: Request, res: Response) {
 
         const userProfile = await User.getUserProfile(userId);
         if (!userProfile) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'No user found' });
         }
 
         res.status(200).json({
-            message: 'Public profile fetched',
+            message: 'Public profile fetched successfully',
             userProfile,
         });
 
@@ -82,12 +82,12 @@ export async function updateUserById(req: Request, res: Response) {
 
         const updates = req.body;
         if (!updates) {
-            return res.status(400).json({ message: 'No fields provided to update' });
+            return res.status(400).json({ message: 'Update data is required' });
         }
         
         const updatedUser = await User.updateUser(String(id), updates);
         if (!updatedUser) {
-            return res.status(404).json({ message: 'Failed to update user by id' });
+            return res.status(404).json({ message: 'User not found or update failed' });
         }
 
         res.status(200).json({
@@ -113,7 +113,7 @@ export async function updateUserProfile(req: Request, res: Response) {
 
         const updates = req.body;
         if (!updates) {
-            return res.status(400).json({ message: 'No fields provided to update' });
+            return res.status(400).json({ message: 'Update data is required' });
         }
 
         const updatedUser = await User.updateUser(loggedIn!, updates);
@@ -141,7 +141,7 @@ export async function deleteUser(req: Request, res: Response) {
 
         const deletedUser = await User.deleteUser(id);
         if (!deletedUser) {
-            return res.status(404).json({ message: 'Failed to delete user' });
+            return res.status(404).json({ message: 'User not found or could not be deleted' });
         }
 
         res.status(200).json({
