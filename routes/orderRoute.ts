@@ -4,8 +4,9 @@ import {
     getMyOrders,
     getOrderById,
     getOrders,
-    updateOrderToDelivered,
-    updateOrderToPaid,
+    updateOrderPaid,
+    updateOrderDelivered,
+    updateOrderQuantity,
 } from '../controllers/orderController.js';
 import adminPrivilege from '../middlewares/adminPrivilege.js';
 import userProtection from '../middlewares/userProtection.js';
@@ -19,7 +20,8 @@ router.get('/myOrders', authToken, getMyOrders);
 
 router.get('/:id', authToken, getOrderById);
 
-router.put('/:id/deliver', authToken, adminPrivilege, updateOrderToDelivered);
-router.put('/:id/pay', authToken, adminPrivilege, updateOrderToPaid);
+router.put('/:id/deliver', authToken, adminPrivilege, updateOrderDelivered);
+router.put('/:id/pay', authToken, userProtection, updateOrderPaid);
+router.put('/:id/quantity', authToken, userProtection, updateOrderQuantity);
 
 export default router; 
