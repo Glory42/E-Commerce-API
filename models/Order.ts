@@ -6,7 +6,7 @@ import {
 } from '../types/Order.js';
 
 
-export default class Product {
+export default class Order {
     static async addItems(order: AddOrderDTO): Promise<OrderDTO | null> {
         try {
             const { data, error } = await supabase
@@ -16,9 +16,9 @@ export default class Product {
                 product_id: order.product_id,
                 quantity: order.quantity,
                 total_price: order.total_price,
-                timestamp: new Date().toISOString,
-                paid: order.status.paid,
-                delivered: order.status.delivered, 
+                timestamp: new Date().toISOString(),
+                paid: false,
+                delivered: false, 
             })
             .select('*')
             .single()
@@ -112,18 +112,14 @@ export default class Product {
         try {
             const { data, error } = await supabase
                 .from('orders')
-                .update({
-                    quantity:updates.quantity,
-                    paid: updates.status.paid,
-                    delivered: updates.status.delivered
-                })
+                .update(updates)
                 .eq('id', id)
                 .select()
                 .single()
             if (error) throw error;
 
             return data;
-            
+
         } catch (err) {
             if (err instanceof Error) {
                 console.log(JSON.stringify({
