@@ -21,7 +21,7 @@ export default class Product {
                 console.log(JSON.stringify({
                     action: 'Error fetching Products',
                     message: err.message,
-                    static: err.stack,
+                    stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));   
             }
@@ -45,7 +45,7 @@ export default class Product {
                 console.log(JSON.stringify({
                     action: 'Error fetching Product by id',
                     message: err.message,
-                    static: err.stack,
+                    stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
             } 
@@ -69,7 +69,7 @@ export default class Product {
                 console.log(JSON.stringify({
                     action: 'Error fetching Product by name',
                     message: err.message,
-                    static: err.stack,
+                    stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
             }
@@ -93,7 +93,7 @@ export default class Product {
                 console.log(JSON.stringify({
                     action: 'Error fetching Product by price',
                     message: err.message,
-                    static: err.stack,
+                    stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
             }
@@ -117,7 +117,7 @@ export default class Product {
                 console.log(JSON.stringify({
                     action: 'Error fetching Product by stock',
                     message: err.message,
-                    static: err.stack,
+                    stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
             }
@@ -141,7 +141,7 @@ export default class Product {
                 console.log(JSON.stringify({
                     action: 'Error fetching Product by category',
                     message: err.message,
-                    static: err.stack,
+                    stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
             }
@@ -186,7 +186,7 @@ export default class Product {
                 console.log(JSON.stringify({
                     action: 'Error while creating Product',
                     message: err.message,
-                    static: err.stack,
+                    stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
             }
@@ -211,7 +211,7 @@ export default class Product {
                 console.log(JSON.stringify({
                     action: 'Error while creating Product review',
                     message: err.message,
-                    static: err.stack,
+                    stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
             }
@@ -241,7 +241,7 @@ export default class Product {
                 console.log(JSON.stringify({
                     action: 'Error while updating Product',
                     message: err.message,
-                    static: err.stack,
+                    stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
             }
@@ -265,7 +265,7 @@ export default class Product {
                 console.log(JSON.stringify({
                     action: 'Error while deleting Product',
                     message: err.message,
-                    static: err.stack,
+                    stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
             }

@@ -23,7 +23,7 @@ const validateUser = ({ email, password, username, phone}: ValidateUserDTO) => {
 }
 
 export default class User {
-    static async getUser(): Promise<UserDTO[]>{
+    static async getUsers(): Promise<UserDTO[]>{
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -85,7 +85,7 @@ export default class User {
                 console.log(JSON.stringify({
                     action: 'Error fetching user by username',
                     message: err.message,
-                    static: err.stack,
+                    stack: err.stack,
                     timestamp: new Date().toISOString()
                 }));
             }
