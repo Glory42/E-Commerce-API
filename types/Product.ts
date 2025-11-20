@@ -3,7 +3,9 @@ export interface ProductDTO {
     price: number,
     stock: number | boolean,
     category: string,
-}
+    image_url?: string,
+    description?: string,
+} 
 
 export interface UpdateProductDTO {
     name?: string;
@@ -16,7 +18,9 @@ export interface CreateProductDTO {
     name: string,
     price: number,
     stock: string | boolean,
-    category: string
+    category: string,
+    image_url?: string,
+    description?: string,
 }
 
 export interface ReviewDTO {
