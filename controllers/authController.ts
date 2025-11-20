@@ -63,10 +63,10 @@ export async function login(req:Request, res: Response) {
             user: {
                 id: user.id,
                 email: user.email,
-                password: user.password,
+                username: user.username,
                 role: user.role,
-                token
-            }
+            },
+            token
         });
         
     } catch (err) {
