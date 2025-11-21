@@ -3,18 +3,19 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import config from '../config/config.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { apiError } from '../utils/apiError.js';
 
-export async function register(req: Request, res: Response) {
-    try {
+export const register = (async (req: Request, res: Response) => {
         const { email, password, username, phone, role='user' } = req.body;
         if (!email || !password) {
-            return res.status(400).json({ error: 'Email and Password are required' });
+            throw new apiError(400, 'Email and Password are required');
         }
 
         const freshUser = await User.createUser({ email, password, username, phone, role });
         if (!freshUser || !freshUser.id) {
             console.error('Invalid user data returned: ', { freshUser });
-            return res.status(500).json({ error: 'Invalid user data returned' });
+            throw new apiError(401, 'Invalid user data returned');
         }
 
         const token = jwt.sign(
@@ -23,32 +24,27 @@ export async function register(req: Request, res: Response) {
             { expiresIn: '1h' }
         )
 
-        res.status(201).json({ message: 'User succesfully stored', user: freshUser, token });
+        res.status(201).json({ 
+            message: 'User succesfully stored',
+            user: freshUser, 
+            token 
+        });
+});
 
-
-    } catch (err) {
-        if (err instanceof Error) {
-            console.error('Register Error:', err.message, err.stack);
-            res.status(500).json({ error: 'server error!', details: err.message || err.toString() });
-        }
-    }
-}
-
-export async function login(req:Request, res: Response) {
-    try {
+export const login = asyncHandler(async (req:Request, res: Response) => {
         const { email, password } = req.body;
         if (!email || !password) {
-            res.status(400).json({ error: 'Email and Password are required' });
+            throw new apiError(400, 'Email and Password are required');
         }
 
         const user = await User.getUserByEmail(email);
         if (!user) {
-            return res.status(400).json({ error: 'User cannot be found or Invalid email' });
+            throw new apiError(404, 'User cannot be found or Invalid email');
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if(!isPasswordValid) {
-            return res.status(400).json({ error: 'Invalid password' });
+            throw new apiError(401, 'Invalid password');
         }
         
 
@@ -68,11 +64,4 @@ export async function login(req:Request, res: Response) {
             },
             token
         });
-        
-    } catch (err) {
-        if (err instanceof Error) {
-            console.error('Login Error: ', err.message, err.stack);
-            res.status(500).json({ error: 'server error!', details: err.message || err.toString() });
-        }
-    }
-}
+});
