@@ -1,15 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-
-interface ErrorWithStatus extends Error {
-    statusCode?: number;
-}
+import { apiError } from '../utils/apiError.js';
 
 export default function errorHandler(
-    err: ErrorWithStatus, 
+    err: Error | apiError, 
     req: Request, 
     res: Response, 
     next: NextFunction) {
-        const statusCode = err.statusCode || 500;
+        const statusCode = err instanceof apiError ? err.statusCode : 500;
         const message = err.message || 'Internal Server Error';
 
         console.error('Error:', {
@@ -17,6 +14,7 @@ export default function errorHandler(
             stack: err.stack,
             url: req.url,
             method: req.method,
+            statusCode,
         });
 
         res.status(statusCode).json({
