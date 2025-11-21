@@ -1,154 +1,108 @@
 import { Request, Response } from 'express';
 import Product from '../models/Products.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { apiError } from '../utils/apiError.js';
 
-export async function getProducts(req: Request, res: Response) {
-    try {
-        const products = await Product.getProducts();
-        if (!products || products.length === 0) {
-            return res.status(404).json({ message: 'No products found' });
-        }
-
-        res.status(200).json({
-            message: 'Products fetched successfully',
-            products,
-        });
-
-    } catch (err) {
-        if (err instanceof Error) {
-            console.error('Failed to fetch products: ', err.message, err.stack);
-            res.status(500).json({ error: 'server error!', details: err.message || err.toString() });
-        }
+export const getProducts = asyncHandler(async (req: Request, res: Response) => {
+    const products = await Product.getProducts();
+    if (!products || products.length === 0) {
+        throw new apiError(404, 'No products found' );
     }
-}
 
-export async function getProductById(req: Request, res: Response) {
-    try {
-        const { id } = req.params;
-        if (!id) {
-            return res.status(400).json({ message: 'Product ID is required' });
-        }
+    res.status(200).json({
+        message: 'Products fetched successfully',
+        products,
+    });
+});
 
-        const product = await Product.getProductById(id);
-        if (!product || product.length === 0) {
-            return res.status(404).json({ message: 'Product not found' });
-        }
-
-        res.status(200).json({
-            message: 'Product fetched successfully',
-            product,
-        });
-        
-    } catch (err) {
-        if (err instanceof Error) {
-            console.error('Failed to fetch product: ', err.message, err.stack);
-            res.status(500).json({ error: 'server error!', details: err.message || err.toString() });
-        }
+export const getProductById = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+        throw new apiError(400, 'Product ID is required');
     }
-}
 
-export async function createProduct(req: Request, res: Response) {
-    try {
-        const { name, price, stock, category } = req.body;
-        if (!name || !price || !stock || !category) {
-            return res.status(400).json({ message: 'Missing required product fields' });
-        } 
-
-        const freshProduct = await Product.createProduct({ name, price, stock, category });
-        if (!freshProduct) {
-            console.error('Invalid product data returned:', freshProduct);
-            return res.status(500).json({ message: 'Product could not be created' });
-        }
-
-        res.status(200).json({
-            message: 'Product created successfully',
-            product: freshProduct,
-        });
-
-    } catch (err) {
-        if (err instanceof Error) {
-            console.error('Failed to create product: ', err.message, err.stack);
-            res.status(500).json({ error: 'server error!', details: err.message || err.toString() });
-        }
+    const product = await Product.getProductById(id);
+    if (!product || product.length === 0) {
+        throw new apiError(404, 'Product not found');
     }
-}
 
-export async function createProductReview(req: Request, res: Response) {
-    try {
-        const { id, review } = req.body;
-        if (!review || !id) {
-            return res.status(400).json({ message: 'Product ID and review are required' });
-        }
+    res.status(200).json({
+        message: 'Product fetched successfully',
+        product,
+    });
+});
 
-        const freshReview = await Product.createProductReview(id, review);
-        if (!freshReview) {
-            console.error('Invalid review data returned:', freshReview)
-            return res.status(400).json({ message: 'Review could not be created' });
-        } 
+export const createProduct = asyncHandler(async (req: Request, res: Response) => {
+    const { name, price, stock, category } = req.body;
+    if (!name || !price || !stock || !category) {
+       throw new apiError(400, 'Missing required product fields');
+    } 
 
-        res.status(200).json({
-            message: 'Review created successfully',
-            review: freshReview,
-        });
-
-    } catch (err) {
-        if (err instanceof Error) {
-            console.error('Failed to create product review: ', err.message, err.stack);
-            res.status(500).json({ error: 'server error!', details: err.message || err.toString() });
-        }
+    const freshProduct = await Product.createProduct({ name, price, stock, category });
+    if (!freshProduct) {
+        console.error('Invalid product data returned:', freshProduct);
+        throw new apiError(500, 'Product could not be created');
     }
-}
 
-export async function updateProduct(req: Request, res: Response) {
-    try {
-        const { id } = req.params;
-        if (!id) {
-            return res.status(400).json({ message: 'Product ID is required' });
-        }
+    res.status(200).json({
+        message: 'Product created successfully',
+        product: freshProduct,
+    });
+});
 
-        const { updates } = req.body;
-        if (!updates) {
-            return res.status(400).json({ message: 'Update data is required' });
-        }
-
-        const updatedProduct = await Product.updateProduct(id, updates);
-        if (!updatedProduct) {
-            return res.status(404).json({ message: 'Product not found or update failed' });
-        }
-
-        res.status(200).json({
-            message: 'Product updated successfully',
-            update: updatedProduct,
-        });
-
-    } catch (err) {
-        if (err instanceof Error) {
-            console.error('Failed to update product: ', err.message, err.stack);
-            res.status(500).json({ error: 'server error!', details: err.message || err.toString() });
-        }
+export const createProductReview = asyncHandler(async (req: Request, res: Response) => {
+    const { id, review } = req.body;
+    if (!review || !id) {
+        throw new apiError(400, 'Product ID and review are required');
     }
-}
 
-export async function deleteProduct(req: Request, res: Response) {
-    try {
-        const { id } = req.params;
-        if (!id) {
-            return res.status(400).json({ message: 'Product ID is required' });
-        }
+    const freshReview = await Product.createProductReview(id, review);
+    if (!freshReview) {
+        console.error('Invalid review data returned:', freshReview)
+        throw new apiError(400, 'Review could not be created');
+    } 
 
-        const deletedProduct = await Product.deleteProduct(id);
-        if (!deletedProduct) {
-            return res.status(404).json({ message: 'Product not found or could not be deleted' });
-        }
+    res.status(200).json({
+        message: 'Review created successfully',
+        review: freshReview,
+    });
+});
 
-        res.status(200).json({
-            message: 'Product deleted successfully',
-            delete: deletedProduct,
-        });
-
-    } catch (err) {
-        if (err instanceof Error) {
-            console.error('Failed to delete product: ', err.message, err.stack);
-            res.status(500).json({ error: 'server error!', details: err.message || err.toString() });
-        }
+export const updateProduct = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+        throw new apiError(400, 'Product ID is required');
     }
-}
+
+    const { updates } = req.body;
+    if (!updates) {
+        throw new apiError(400, 'Update data is required');
+    }
+
+    const updatedProduct = await Product.updateProduct(id, updates);
+    if (!updatedProduct) {
+        throw new apiError(404, 'Product not found or update failed');
+    }
+
+    res.status(200).json({
+        message: 'Product updated successfully',
+        update: updatedProduct,
+    });
+});
+
+export const deleteProduct = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+        throw new apiError(400, 'Product ID is required');
+    }
+
+    const deletedProduct = await Product.deleteProduct(id);
+    if (!deletedProduct) {
+        throw new apiError(404, 'Product not found or could not be deleted');
+    }
+
+    res.status(200).json({
+        message: 'Product deleted successfully',
+        delete: deletedProduct,
+    });
+});
