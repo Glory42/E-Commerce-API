@@ -155,6 +155,11 @@ export default class User {
     static async createUser({email, password, username, phone, role='user'}: CreateUserDTO): Promise<CreateUserDTO> {
         try {
             validateUser({email, password, username, phone});
+
+            if (!['user', 'admin'].includes(role)) {
+                throw new Error('Invalid role');
+            }
+
             const harsedPassword = await bcrypt.hash(password, 10);
             
             const { data, error } = await supabase
@@ -204,7 +209,7 @@ export default class User {
         }
     }
 
-    static async updateUser(id: string, updates: UpdateUserDTO): Promise<UpdateUserDTO> {
+    static async updateUser(id: string, updates: UpdateUserDTO): Promise<UserDTO> {
         try {
             const { data, error } = await supabase
                 .from('users')
