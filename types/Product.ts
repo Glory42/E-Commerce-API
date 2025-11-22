@@ -30,3 +30,9 @@ export interface ReviewDTO {
     comment?: string;
     createdAt?: string;
 }
+
+export interface CreateReviewDTO {
+    rating: number,
+    comment?: string;
+    created_at: string;
+}
