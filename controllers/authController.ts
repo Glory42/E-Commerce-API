@@ -7,26 +7,31 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { apiError } from '../utils/apiError.js';
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
-    const { email, password, username, phone, role='user' } = req.body;
+    const { email, password, username, phone } = req.body;
     if (!email || !password) {
         throw new apiError(400, 'Email and Password are required');
     }
 
-    const freshUser = await User.createUser({ email, password, username, phone, role });
+    const freshUser = await User.createUser({ email, password, username, phone, role: 'user' });
     if (!freshUser || !freshUser.id) {
         console.error('Invalid user data returned: ', { freshUser });
         throw new apiError(401, 'Invalid user data returned');
     }
 
     const token = jwt.sign(
-        { id: freshUser.id, email, role },
+        { id: freshUser.id, email, role: freshUser.role },
         config.JWT_TOKEN,
         { expiresIn: '1h' }
     );
 
     res.status(201).json({ 
         message: 'User succesfully stored',
-        user: freshUser, 
+        user: {
+            id: freshUser.id,
+            email: freshUser.email,
+            username: freshUser.username,
+            role: freshUser.role,
+        },
         token 
     });
 });
