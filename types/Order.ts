@@ -6,6 +6,7 @@ export interface OrderDTO {
     total_price: number,
     paid: boolean,
     delivered: boolean,
+    status: 'ordered' | 'approved' | 'preparing' | 'sent' | 'delivered' 
 }
 
 export interface AddOrderDTO {
