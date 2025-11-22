@@ -32,6 +32,12 @@ export const getProductById = asyncHandler(async (req: Request, res: Response) =
     });
 });
 
+/*
+export const getProductReview = asyncHandler(async (req: Request, res: Response) => {
+
+})
+*/
+
 export const createProduct = asyncHandler(async (req: Request, res: Response) => {
     const { name, price, stock, category } = req.body;
     if (!name || !price || !stock || !category) {
@@ -74,7 +80,7 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response) =>
         throw new apiError(400, 'Product ID is required');
     }
 
-    const { updates } = req.body;
+    const updates  = req.body;
     if (!updates) {
         throw new apiError(400, 'Update data is required');
     }
@@ -96,13 +102,15 @@ export const deleteProduct = asyncHandler(async (req: Request, res: Response) =>
         throw new apiError(400, 'Product ID is required');
     }
 
-    const deletedProduct = await Product.deleteProduct(id);
-    if (!deletedProduct) {
+    const productExist = await Product.getProductById(id);
+    if (!productExist) {
         throw new apiError(404, 'Product not found or could not be deleted');
     }
 
+    await Product.deleteProduct(id);
+
     res.status(200).json({
         message: 'Product deleted successfully',
-        delete: deletedProduct,
+        productExist,
     });
 });
