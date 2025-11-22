@@ -20,6 +20,6 @@ router.get('/:id', getProductById);
 router.put('/:id', authToken, adminPrivilege, updateProduct);
 router.delete('/:id', authToken, adminPrivilege, deleteProduct);
 
-router.get('/:id/reviews', authToken, createProductReview);
+router.post('/:id/reviews', authToken, createProductReview);
 
 export default router;
