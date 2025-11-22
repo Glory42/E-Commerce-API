@@ -3,7 +3,8 @@ import {
     ProductDTO, 
     UpdateProductDTO, 
     CreateProductDTO, 
-    ReviewDTO 
+    ReviewDTO,
+    CreateReviewDTO 
 } from '../types/Product.js';
 
 export default class Product {
@@ -149,6 +150,26 @@ export default class Product {
         }
     }
 
+    //to do make getProdcut review
+    /* static async getProductReview(id: string): Promise<ReviewDTO | null> {
+        try {
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+                .eq('')
+        } catch (err) {
+            if (err instanceof Error) {
+                console.log(JSON.stringify({
+                    action: 'Error fetching Product reviews',
+                    message: err.message,
+                    stack: err.stack,
+                    timestamp: new Date().toISOString()
+                }));
+            }
+        }
+    }
+    */
+
     static async createProduct({ name, price, stock, category }: CreateProductDTO): Promise<CreateProductDTO> {
         try {
             const { data, error } = await supabase
@@ -194,7 +215,7 @@ export default class Product {
         }
     } 
 
-    static async createProductReview(id: string, review: string): Promise<ReviewDTO> {
+    static async createProductReview(id: string, review: CreateReviewDTO): Promise<ReviewDTO> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -219,7 +240,7 @@ export default class Product {
         }
     } 
 
-    static async updateProduct(id: string, updates: UpdateProductDTO): Promise<UpdateProductDTO> {
+    static async updateProduct(id: string, updates: UpdateProductDTO): Promise<ProductDTO[]> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -231,7 +252,7 @@ export default class Product {
                 })
                 .eq('id', id)
                 .select()
-                .single()
+                
             if (error) throw error;
 
             return data;
