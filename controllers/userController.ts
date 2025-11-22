@@ -90,19 +90,48 @@ export const updateUserProfile = asyncHandler(async (req: Request, res: Response
     });
 });
 
+export const updatedUserRole = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    if (!id) {
+        throw new apiError(400, 'User ID is required');
+    }
+
+    if (!role || !['user', 'admin'].includes(role)) {
+        throw new apiError(400, 'Valid role (user/admin) is required');
+    }
+
+    const updatedUser = await User.updateUser(id, { role });
+    if (!updatedUser) {
+        throw new apiError(404, 'User no found');
+    }
+
+    res.status(200).json({
+        message: `User role updated to ${role}`,
+        user: {
+            email: updatedUser.email,
+            username: updatedUser.username,
+            role: updatedUser.role,
+        }
+    });
+});
+
 export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
         const { id } = req.params;
         if (!id) {
             throw new apiError(400, 'User id is required');
         }
 
-        const deletedUser = await User.deleteUser(id);
-        if (!deletedUser) {
+        const userExist = await User.getUserById(id);
+        if (!userExist) {
             throw new apiError(404, 'User not found or could not be deleted');
         }
 
+        await User.deleteUser(id);
+
         res.status(200).json({
             message: 'User deleted succesfully',
-            deletedUser,
+            userExist,
         });
 });
