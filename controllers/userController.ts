@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import User from '../models/User.js';
+import UserRole from '../models/User.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { apiError } from '../utils/apiError.js';
 
@@ -98,7 +99,8 @@ export const updatedUserRole = asyncHandler(async (req: Request, res: Response) 
         throw new apiError(400, 'User ID is required');
     }
 
-    if (!role || !['user', 'admin'].includes(role)) {
+    const validRoles: UserRole[] = ['user', 'admin'];
+    if (!role || validRoles.includes(role)) {
         throw new apiError(400, 'Valid role (user/admin) is required');
     }
 
